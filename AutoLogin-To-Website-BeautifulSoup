@@ -1,0 +1,40 @@
+#Intall BeautifulSoup by running below line
+#pip install requests beautifulsoup4
+
+
+import requests
+from bs4 import BeautifulSoup
+
+# Replace these with the appropriate values
+login_url = 'https://azure.com'
+username = 'paulnikpraveen@gmail.com'
+password = 'germany@040423'
+
+# Start a session to maintain cookies
+session = requests.Session()
+
+# Get the login page to retrieve the CSRF token (if any)
+response = session.get(login_url)
+soup = BeautifulSoup(response.text, 'html.parser')
+
+# Find the CSRF token (if present)
+csrf_token = ''
+csrf_input = soup.find('input', attrs={'name': 'csrf_token'})
+if csrf_input:
+    csrf_token = csrf_input['value']
+
+# Prepare the payload with your login credentials and the CSRF token (if present)
+payload = {
+    'username': username,
+    'password': password,
+    'csrf_token': csrf_token
+}
+
+# Send a POST request to the login URL with the payload
+response = session.post(login_url, data=payload)
+print(soup)
+# Check if login was successful
+if response.url != login_url:
+    print('Login successful.')
+else:
+    print('Login failed.')
